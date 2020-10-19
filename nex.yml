@@ -1,0 +1,14 @@
+runs:
+  image: golang:latest
+  command:
+    - bin/checkout
+    - checkout
+  defaultValues:
+    ssh-key: ${event.repository}
+  schema:
+    type: object
+    required:
+      - ssh-key
+    properties:
+      ssh-key:
+        type: string
