@@ -4,7 +4,7 @@ runs:
     - bin/checkout
     - checkout
   defaultValues:
-    ssh-key: ${event.repository}
+    repository: ${event.repository}
   schema:
     type: object
     required:
@@ -12,3 +12,11 @@ runs:
     properties:
       ssh-key:
         type: string
+      repository:
+        type: string
+      ref:
+        type: string
+      depth:
+        type: number
+      submodules:
+        type: boolean

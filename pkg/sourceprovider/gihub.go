@@ -34,6 +34,10 @@ func NewGitProvider() SourceProvider {
 func (p *gitProvider) Download(ctx context.Context, url, path string) error {
 	options := &git.CloneOptions{
 		URL: url,
+		Auth: &gitssh.PublicKeys{
+			Signer:                nil,
+			HostKeyCallbackHelper: defaultHostKeyCallbackHelper,
+		},
 		//Auth:              auth,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	}
