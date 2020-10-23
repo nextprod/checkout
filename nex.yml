@@ -10,6 +10,11 @@ runs:
     submodules: true
   schema:
     type: object
+    required:
+      - repository
+      - ref
+      - depth
+      - submodules
     properties:
       ssh-key:
         type: string
