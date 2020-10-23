@@ -8,6 +8,7 @@ runs:
     ref: ${event.ref}
     depth: 1
     submodules: true
+    ssh-key: ~/.ssh/id_rsa
   schema:
     type: object
     properties:
