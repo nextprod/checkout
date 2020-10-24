@@ -12,6 +12,4 @@ func run(ctx context.Context, payload []byte) (interface{}, error) {
 	return nil, nil
 }
 
-func main() {
-	runtime.Start(run)
-}
+func main() { runtime.Start(run) }
