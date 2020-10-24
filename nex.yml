@@ -1,4 +1,4 @@
-runs:
+spec:
   image: golang:latest
   command:
     - bin/checkout
