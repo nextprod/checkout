@@ -8,7 +8,7 @@ import (
 )
 
 func run(ctx context.Context, payload []byte) (interface{}, error) {
-	log.Println("Received request")
+	log.Printf("Event: %s", string(payload))
 	return nil, nil
 }
 
