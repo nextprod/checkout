@@ -1,3 +1,18 @@
+
+parameters:
+  type: object
+  properties:
+    ssh-key:
+      type: string
+    repository:
+      type: string
+    ref:
+      type: string
+    depth:
+      type: number
+    submodules:
+      type: boolean
+
 runs:
   image: golang:latest
   command:
@@ -9,16 +24,4 @@ runs:
     depth: 1
     submodules: true
     ssh-key: ~/.ssh/id_rsa
-  schema:
-    type: object
-    properties:
-      ssh-key:
-        type: string
-      repository:
-        type: string
-      ref:
-        type: string
-      depth:
-        type: number
-      submodules:
-        type: boolean
+    
