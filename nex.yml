@@ -1,6 +1,8 @@
 
 parameters:
   type: object
+  required:
+    - ssh-key
   properties:
     ssh-key:
       type: string
@@ -24,5 +26,3 @@ runs:
     ref: ${event.ref}
     depth: 1
     submodules: true
-    ssh-key: ~/.ssh/id_rsa
-    
