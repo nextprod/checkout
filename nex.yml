@@ -1,8 +1,6 @@
 
 parameters:
   type: object
-  required:
-    - ssh-key
   properties:
     ssh-key:
       type: string
@@ -22,7 +20,7 @@ runs:
     - bin/checkout
     - checkout
   defaultValues:
-    repository: ${event.repository}
-    ref: ${event.ref}
+    repository: ${env.EVENT_REPOSITORY}
+    ref: ${env.EVENT_REF}
     depth: 1
     submodules: true
