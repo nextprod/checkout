@@ -37,37 +37,43 @@ func NewGitProvider() SourceProvider {
 
 // Download implements SourceProvider.
 func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref, path string) error {
-	key, _ := pem.Decode(privateKey)
-	var pkey interface{}
-	if key == nil {
-		return fmt.Errorf("ssh: invalid key")
-	}
-	switch key.Type {
-	case "RSA PRIVATE KEY":
-		rsa, err := x509.ParsePKCS1PrivateKey(key.Bytes)
+	var signer ssh.Signer
+	if privateKey != nil && len(privateKey) > 0 {
+		key, _ := pem.Decode(privateKey)
+		var pkey interface{}
+		if key == nil {
+			return fmt.Errorf("ssh: invalid key")
+		}
+		switch key.Type {
+		case "RSA PRIVATE KEY":
+			rsa, err := x509.ParsePKCS1PrivateKey(key.Bytes)
+			if err != nil {
+				return err
+			}
+			pkey = rsa
+		default:
+			return fmt.Errorf("ssh: unsupported key type %q", key.Type)
+		}
+		var err error
+		signer, err = ssh.NewSignerFromKey(pkey)
 		if err != nil {
 			return err
 		}
-		pkey = rsa
-	default:
-		return fmt.Errorf("ssh: unsupported key type %q", key.Type)
-	}
-	signer, err := ssh.NewSignerFromKey(pkey)
-	if err != nil {
-		return err
 	}
 	options := &git.CloneOptions{
-		URL: url,
-		Auth: &gitssh.PublicKeys{
-			User:                  "git",
-			Signer:                signer,
-			HostKeyCallbackHelper: defaultHostKeyCallbackHelper,
-		},
+		URL:               url,
 		ReferenceName:     plumbing.NewBranchReferenceName(ref),
 		SingleBranch:      true,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		Progress:          os.Stdout,
 	}
-	_, err = git.PlainCloneContext(ctx, path, false, options)
+	if signer != nil {
+		options.Auth = &gitssh.PublicKeys{
+			User:                  "git",
+			Signer:                signer,
+			HostKeyCallbackHelper: defaultHostKeyCallbackHelper,
+		}
+	}
+	_, err := git.PlainCloneContext(ctx, path, false, options)
 	return err
 }
