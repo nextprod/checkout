@@ -1,12 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/base64"
+	"fmt"
 	"os"
 
 	"github.com/nextprod/checkout/pkg/sourceprovider"
-	"github.com/nextprod/sdk-go/runtime"
 )
 
 // Parameters represents request parameters.
@@ -40,4 +41,11 @@ func run(ctx context.Context, event Event) (interface{}, error) {
 	return nil, nil
 }
 
-func main() { runtime.Start(run) }
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	event, err := reader.ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(event)
+}
