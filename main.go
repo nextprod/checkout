@@ -44,6 +44,7 @@ func run(ctx context.Context, event Event) (interface{}, error) {
 }
 
 func main() {
+	fmt.Println("Waiting for parameters")
 	reader := bufio.NewReader(os.Stdin)
 	in, err := reader.ReadString('\n')
 	if err != nil {
