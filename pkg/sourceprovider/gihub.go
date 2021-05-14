@@ -45,8 +45,8 @@ func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref,
 			return fmt.Errorf("ssh: invalid key")
 		}
 		switch key.Type {
-		case "RSA PRIVATE KEY":
-			rsa, err := x509.ParsePKCS1PrivateKey(key.Bytes)
+		case "PRIVATE KEY":
+			rsa, err := x509.ParsePKCS8PrivateKey(key.Bytes)
 			if err != nil {
 				return err
 			}
@@ -62,7 +62,7 @@ func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref,
 	}
 	options := &git.CloneOptions{
 		URL:               url,
-		ReferenceName:     plumbing.NewBranchReferenceName(ref),
+		ReferenceName:     plumbing.NewBranchReferenceName("main"),
 		SingleBranch:      true,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		Progress:          os.Stdout,

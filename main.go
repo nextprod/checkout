@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/nextprod/checkout/pkg/sourceprovider"
@@ -16,8 +15,8 @@ type Parameters struct {
 	SSHKey     *string `json:"ssh-key"`
 	Repository string  `json:"repository"`
 	Ref        string  `json:"ref"`
-	Depth      string  `json:"depth"`
-	Submodules string  `json:"submodules"`
+	Depth      int     `json:"depth"`
+	Submodules bool    `json:"submodules"`
 }
 
 // Event represents run event.
@@ -44,18 +43,17 @@ func run(ctx context.Context, event Event) (interface{}, error) {
 }
 
 func main() {
-	fmt.Println("Waiting for parameters")
+	os.Stdout.WriteString("Reading input...\n")
 	reader := bufio.NewReader(os.Stdin)
 	in, err := reader.ReadString('\n')
 	if err != nil {
-		panic(err)
+		os.Stderr.WriteString(err.Error())
 	}
 	var event Event
 	if err := json.Unmarshal([]byte(in), &event); err != nil {
-		panic(err)
+		os.Stderr.WriteString(err.Error())
 	}
 	if _, err := run(context.Background(), event); err != nil {
-		panic(err)
+		os.Stderr.WriteString(err.Error())
 	}
-	fmt.Println("Parameters parsed")
 }
