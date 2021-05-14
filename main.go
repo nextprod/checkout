@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -15,8 +16,8 @@ type Parameters struct {
 	SSHKey     *string `json:"ssh-key"`
 	Repository string  `json:"repository"`
 	Ref        string  `json:"ref"`
-	Depth      int     `json:"depth"`
-	Submodules bool    `json:"submodules"`
+	Depth      string  `json:"depth"`
+	Submodules string  `json:"submodules"`
 }
 
 // Event represents run event.
@@ -29,6 +30,7 @@ func run(ctx context.Context, event Event) (interface{}, error) {
 	var keyb []byte
 	if params.SSHKey != nil {
 		var err error
+		// Decode base64 encoded SSH private key.
 		keyb, err = base64.StdEncoding.DecodeString(*params.SSHKey)
 		if err != nil {
 			return nil, err
@@ -43,9 +45,16 @@ func run(ctx context.Context, event Event) (interface{}, error) {
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
-	event, err := reader.ReadString('\n')
+	in, err := reader.ReadString('\n')
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(event)
+	var event Event
+	if err := json.Unmarshal([]byte(in), &event); err != nil {
+		panic(err)
+	}
+	if _, err := run(context.Background(), event); err != nil {
+		panic(err)
+	}
+	fmt.Println("Parameters parsed")
 }
