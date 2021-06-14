@@ -6,6 +6,8 @@ parameters:
       type: string
     repository:
       type: string
+    branch:
+      type: string
     ref:
       type: string
     depth:
@@ -21,6 +23,7 @@ runs:
     - checkout
   defaultValues:
     repository: ${env.EVENT_REPOSITORY}
+    branch: main
     ref: ${env.EVENT_REF}
     depth: 1
     submodules: true
