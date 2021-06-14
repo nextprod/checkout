@@ -7,5 +7,5 @@ import (
 // SourceProvider represents code source provider.
 type SourceProvider interface {
 	// Download downloads source from source provider.
-	Download(ctx context.Context, ssh []byte, url, ref, path string) error
+	Download(ctx context.Context, ssh []byte, url, branch, commit, path string) error
 }

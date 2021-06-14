@@ -36,9 +36,9 @@ func NewGitProvider() SourceProvider {
 }
 
 // Download implements SourceProvider.
-func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref, path string) error {
+func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, branch, commit, path string) error {
 	var signer ssh.Signer
-	if privateKey != nil && len(privateKey) > 0 {
+	if privateKey != nil {
 		key, _ := pem.Decode(privateKey)
 		var pkey interface{}
 		if key == nil {
@@ -62,7 +62,7 @@ func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref,
 	}
 	options := &git.CloneOptions{
 		URL:               url,
-		ReferenceName:     plumbing.NewBranchReferenceName("main"),
+		ReferenceName:     plumbing.NewBranchReferenceName(branch),
 		SingleBranch:      true,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 		Progress:          os.Stdout,
@@ -74,6 +74,19 @@ func (p *gitProvider) Download(ctx context.Context, privateKey []byte, url, ref,
 			HostKeyCallbackHelper: defaultHostKeyCallbackHelper,
 		}
 	}
-	_, err := git.PlainCloneContext(ctx, path, false, options)
-	return err
+	r, err := git.PlainCloneContext(ctx, path, false, options)
+	if err != nil {
+		return err
+	}
+	tree, err := r.Worktree()
+	if err != nil {
+		return err
+	}
+	checkoutOptions := &git.CheckoutOptions{
+		Hash: plumbing.NewHash(commit),
+	}
+	if err := tree.Checkout(checkoutOptions); err != nil {
+		return err
+	}
+	return nil
 }
